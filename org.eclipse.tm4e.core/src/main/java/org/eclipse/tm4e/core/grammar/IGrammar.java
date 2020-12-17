@@ -17,6 +17,7 @@
 package org.eclipse.tm4e.core.grammar;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * TextMate grammar API.
@@ -90,5 +91,12 @@ public interface IGrammar {
 	 * e.g. for getting the languageId: `(metadata & MetadataConsts.LANGUAGEID_MASK) >>> MetadataConsts.LANGUAGEID_OFFSET`
 	 */
 	ITokenizeLineResult2 tokenizeLine2(String lineText, StackElement prevState);
+
+	/**
+	 * Tokenize a whole text
+	 * @param text to tokenize
+	 * @return The list of {@link ITokenizeLineResult}, each item covering 1 line of the text
+	 */
+	List<ITokenizeLineResult> tokenizeText(String text);
 	
 }

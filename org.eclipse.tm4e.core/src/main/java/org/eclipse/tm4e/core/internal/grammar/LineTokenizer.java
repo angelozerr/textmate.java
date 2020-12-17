@@ -18,6 +18,7 @@ package org.eclipse.tm4e.core.internal.grammar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import org.eclipse.tm4e.core.grammar.GrammarHelper;
@@ -125,7 +126,7 @@ class LineTokenizer {
 
 		if (matchedRuleId == -1) {
 			// We matched the `end` for this rule => pop it
-			BeginEndRule poppedRule = (BeginEndRule) stack.getRule(grammar);
+			BeginEndRule poppedRule = (BeginEndRule) stack.rule;
 
 			/*
 			 * if (logger.isEnabled()) { logger.log("  popping " + poppedRule.debugName +
@@ -163,7 +164,7 @@ class LineTokenizer {
 			// push it on the stack rule
 			String scopeName = rule.getName(lineText.string, captureIndices);
 			ScopeListElement nameScopesList = stack.contentNameScopesList.push(grammar, scopeName);
-			stack = stack.push(matchedRuleId, linePos, null, nameScopesList, nameScopesList);
+			stack = stack.push(rule, linePos, null, nameScopesList, nameScopesList);
 
 			if (rule instanceof BeginEndRule) {
 				BeginEndRule pushedRule = (BeginEndRule) rule;
@@ -187,7 +188,7 @@ class LineTokenizer {
 							pushedRule.getEndWithResolvedBackReferences(lineText.string, captureIndices));
 				}
 
-				if (!hasAdvanced && beforePush.hasSameRuleAs(stack)) {
+				if (!hasAdvanced && Objects.equals(beforePush.rule, stack.rule)) {
 					// Grammar pushed the same rule without advancing
 					LOGGER.info("[2] - Grammar is in an endless loop - Grammar pushed the same rule without advancing");
 					stack = stack.pop();
@@ -215,7 +216,7 @@ class LineTokenizer {
 							pushedRule.getWhileWithResolvedBackReferences(lineText.string, captureIndices));
 				}
 
-				if (!hasAdvanced && beforePush.hasSameRuleAs(stack)) {
+				if (!hasAdvanced && Objects.equals(beforePush.rule, stack.rule)) {
 					// Grammar pushed the same rule without advancing
 					LOGGER.info("[3] - Grammar is in an endless loop - Grammar pushed the same rule without advancing");
 					stack = stack.pop();
@@ -257,7 +258,7 @@ class LineTokenizer {
 
 	private IMatchResult matchRule(Grammar grammar, OnigString lineText, boolean isFirstLine, final int linePos,
 			StackElement stack, int anchorPosition) {
-		Rule rule = stack.getRule(grammar);
+		Rule rule = stack.rule;
 		final ICompiledRule ruleScanner = rule.compile(grammar, stack.endRule, isFirstLine, linePos == anchorPosition);
 		final IOnigNextMatchResult r = ruleScanner.scanner.findNextMatchSync(lineText, linePos);
 
@@ -435,9 +436,9 @@ class LineTokenizer {
 				ScopeListElement nameScopesList = stack.contentNameScopesList.push(grammar, scopeName);
 				String contentName = captureRule.getContentName(lineText.string, captureIndices);
 				ScopeListElement contentNameScopesList = nameScopesList.push(grammar, contentName);
-
+				Rule ruleClone = grammar.getRule(captureRule.retokenizeCapturedWithRuleId);
 				// the capture requires additional matching
-				StackElement stackClone = stack.push(captureRule.retokenizeCapturedWithRuleId, captureIndex.getStart(),
+				StackElement stackClone = stack.push(ruleClone, captureIndex.getStart(),
 						null, nameScopesList, contentNameScopesList);
 				tokenizeString(grammar,
 						GrammarHelper.createOnigString(lineText.string.substring(0, captureIndex.getEnd())),
@@ -474,7 +475,7 @@ class LineTokenizer {
 		int currentanchorPosition = -1;
 		List<WhileStack> whileRules = new ArrayList<>();
 		for (StackElement node = stack; node != null; node = node.pop()) {
-			Rule nodeRule = node.getRule(grammar);
+			Rule nodeRule = node.rule;
 			if (nodeRule instanceof BeginWhileRule) {
 				whileRules.add(new WhileStack(node, (BeginWhileRule) nodeRule));
 			}

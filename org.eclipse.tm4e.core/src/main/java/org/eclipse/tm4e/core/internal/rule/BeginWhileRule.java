@@ -28,7 +28,7 @@ public class BeginWhileRule extends Rule {
 	private RegExpSource _while;
 	public final boolean whileHasBackReferences;
 	public final boolean hasMissingPatterns;
-	public final Integer[] patterns;
+	public final Rule[] patterns;
 	private RegExpSourceList cachedCompiledPatterns;
 	private RegExpSourceList cachedCompiledWhilePatterns;
 
@@ -55,9 +55,8 @@ public class BeginWhileRule extends Rule {
 	public void collectPatternsRecursive(IRuleRegistry grammar, RegExpSourceList out, boolean isFirst) {
 		if (isFirst) {
 			Rule rule;
-			for (Integer pattern : patterns) {
-				rule = grammar.getRule(pattern);
-				rule.collectPatternsRecursive(grammar, out, false);
+			for (Rule pattern : patterns) {
+				pattern.collectPatternsRecursive(grammar, out, false);
 			}
 		} else {
 			out.push(this.begin);

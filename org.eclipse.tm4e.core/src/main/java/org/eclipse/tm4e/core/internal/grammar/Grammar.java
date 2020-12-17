@@ -54,7 +54,7 @@ import org.eclipse.tm4e.core.theme.ThemeTrieElementRule;
  */
 public class Grammar implements IGrammar, IRuleFactoryHelper {
 
-	private int rootId;
+	private Rule root;
 	private int lastRuleId;
 	private final Map<Integer, Rule> ruleId2desc;
 	private final Map<String, IRawGrammar> includedGrammars;
@@ -66,7 +66,7 @@ public class Grammar implements IGrammar, IRuleFactoryHelper {
 	public Grammar(IRawGrammar grammar, int initialLanguage, Map<String, Integer> embeddedLanguages,
 			IGrammarRepository grammarRepository, IThemeProvider themeProvider) {
 		this.scopeMetadataProvider = new ScopeMetadataProvider(initialLanguage, themeProvider, embeddedLanguages);
-		this.rootId = -1;
+		this.root = null;
 		this.lastRuleId = 0;
 		this.includedGrammars = new HashMap<>();
 		this.grammarRepository = grammarRepository;
@@ -206,9 +206,10 @@ public class Grammar implements IGrammar, IRuleFactoryHelper {
 
 	@SuppressWarnings("unchecked")
 	private <T> T tokenize(String lineText, StackElement prevState, boolean emitBinaryTokens) {
-		if (this.rootId == -1) {
-			this.rootId = RuleFactory.getCompiledRuleId(this.grammar.getRepository().getSelf(), this,
+		if (this.root == null) {
+			int rootId = RuleFactory.getCompiledRuleId(this.grammar.getRepository().getSelf(), this,
 					this.grammar.getRepository());
+			this.root = getRule(rootId);
 		}
 
 		boolean isFirstLine;
@@ -220,13 +221,13 @@ public class Grammar implements IGrammar, IRuleFactoryHelper {
 					rawDefaultMetadata.tokenType, defaultTheme.fontStyle, defaultTheme.foreground,
 					defaultTheme.background);
 
-			String rootScopeName = this.getRule(this.rootId).getName(null, null);
+			String rootScopeName = root.getName(null, null);
 			ScopeMetadata rawRootMetadata = this.scopeMetadataProvider.getMetadataForScope(rootScopeName);
 			int rootMetadata = ScopeListElement.mergeMetadata(defaultMetadata, null, rawRootMetadata);
 
 			ScopeListElement scopeList = new ScopeListElement(null, rootScopeName, rootMetadata);
 
-			prevState = new StackElement(null, this.rootId, -1, null, scopeList, scopeList);
+			prevState = new StackElement(null, root, -1, null, scopeList, scopeList);
 		} else {
 			isFirstLine = false;
 			prevState.reset();
@@ -261,6 +262,25 @@ public class Grammar implements IGrammar, IRuleFactoryHelper {
 	@Override
 	public Collection<String> getFileTypes() {
 		return grammar.getFileTypes();
+	}
+
+	@Override
+	public List<ITokenizeLineResult> tokenizeText(String text) {
+		if (text == null || text.isEmpty()) {
+			return Collections.emptyList();
+		}
+		String[] lines = text.split("\\r?\\n");
+		List<ITokenizeLineResult> res = new ArrayList<>(lines.length);
+		ITokenizeLineResult previousLineResult = null;
+		for (String line : lines) {
+			if (previousLineResult == null) {
+				previousLineResult = tokenizeLine(line);
+			} else {
+				previousLineResult = tokenizeLine(line, previousLineResult.getRuleStack());
+			}
+			res.add(previousLineResult);
+		}
+		return res;
 	}
 
 }

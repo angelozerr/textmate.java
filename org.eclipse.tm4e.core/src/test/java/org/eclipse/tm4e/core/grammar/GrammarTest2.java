@@ -11,9 +11,12 @@
  */
 package org.eclipse.tm4e.core.grammar;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.tm4e.core.Data;
@@ -34,7 +37,6 @@ public class GrammarTest2 {
 
 		StackElement ruleStack = null;
 		int i = 0;
-		int j = 0;
 
 		List<String> lines = new ArrayList<>();
 		BufferedReader reader = null;
@@ -70,8 +72,20 @@ public class GrammarTest2 {
 				System.err.println(s);
 				// Assert.assertEquals(EXPECTED_MULTI_LINE_TOKENS[i + j], s);
 			}
-			j = i;
 		}
 		System.out.println(System.currentTimeMillis() - start - t);
+	}
+
+
+	@Test
+	public void testYamlMultiline() throws Exception {
+		Registry registry = new Registry();
+		IGrammar grammar = registry.loadGrammarFromPathSync("yaml.tmLanguage.json",
+				Data.class.getResourceAsStream("yaml.tmLanguage.json"));
+		String text = ">\n should.be.string.unquoted.block.yaml\n should.also.be.string.unquoted.block.yaml";
+		List<ITokenizeLineResult> tokenized = grammar.tokenizeText(text);
+		assertTrue(Arrays.stream(tokenized.get(0).getTokens()).flatMap(token -> token.getScopes().stream()).anyMatch("keyword.control.flow.block-scalar.folded.yaml"::equals));
+		assertTrue(Arrays.stream(tokenized.get(1).getTokens()).flatMap(token -> token.getScopes().stream()).anyMatch("string.unquoted.block.yaml"::equals));
+		assertTrue(Arrays.stream(tokenized.get(2).getTokens()).flatMap(token -> token.getScopes().stream()).anyMatch("string.unquoted.block.yaml"::equals));
 	}
 }

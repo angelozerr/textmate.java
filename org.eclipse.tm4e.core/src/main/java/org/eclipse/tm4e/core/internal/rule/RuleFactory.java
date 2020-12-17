@@ -94,12 +94,10 @@ public class RuleFactory {
 			IRawRepository repository) {
 		List<CaptureRule> r = new ArrayList<>();
 		int numericCaptureId;
-		int maximumCaptureId;
-		int i;
 
 		if (captures != null) {
 			// Find the maximum capture id
-			maximumCaptureId = 0;
+			int maximumCaptureId = 0;
 			for (String captureId : captures) {
 				numericCaptureId = parseInt(captureId, 10);
 				if (numericCaptureId > maximumCaptureId) {
@@ -108,7 +106,7 @@ public class RuleFactory {
 			}
 
 			// Initialize result
-			for (i = 0; i <= maximumCaptureId; i++) {
+			for (int i = 0; i <= maximumCaptureId; i++) {
 				r.add(null);
 			}
 
@@ -139,17 +137,11 @@ public class RuleFactory {
 
 	private static ICompilePatternsResult _compilePatterns(Collection<IRawRule> patterns, IRuleFactoryHelper helper,
 			IRawRepository repository) {
-		Collection<Integer> r = new ArrayList<Integer>();
-		int i;
-		int len;
-		int patternId;
-		IRawGrammar externalGrammar;
-		Rule rule;
-		boolean skipRule;
+		Collection<Rule> r = new ArrayList<>();
 
 		if (patterns != null) {
 			for (IRawRule pattern : patterns) {
-				patternId = -1;
+				int patternId = -1;
 
 				if (pattern.getInclude() != null) {
 					if (pattern.getInclude().charAt(0) == '#') {
@@ -176,7 +168,7 @@ public class RuleFactory {
 							externalGrammarName = pattern.getInclude();
 						}
 						// External include
-						externalGrammar = helper.getExternalGrammar(externalGrammarName, repository);
+						IRawGrammar externalGrammar = helper.getExternalGrammar(externalGrammarName, repository);
 
 						if (externalGrammar != null) {
 							if (externalGrammarInclude != null) {
@@ -206,9 +198,9 @@ public class RuleFactory {
 				}
 
 				if (patternId != -1) {
-					rule = helper.getRule(patternId);
+					Rule rule = helper.getRule(patternId);
 
-					skipRule = false;
+					boolean skipRule = false;
 
 					if (rule instanceof IncludeOnlyRule) {
 						IncludeOnlyRule ior = (IncludeOnlyRule) rule;
@@ -233,7 +225,7 @@ public class RuleFactory {
 						continue;
 					}
 
-					r.add(patternId);
+					r.add(rule);
 				}
 			}
 		}

@@ -29,7 +29,7 @@ public class BeginEndRule extends Rule {
 	public List<CaptureRule> endCaptures;
 	public boolean applyEndPatternLast;
 	public final boolean hasMissingPatterns;
-	public Integer[] patterns;
+	public Rule[] patterns;
 	private RegExpSourceList cachedCompiledPatterns;
 
 	public BeginEndRule(int id, String name, String contentName, String begin, List<CaptureRule> beginCaptures,
@@ -53,9 +53,8 @@ public class BeginEndRule extends Rule {
 	@Override
 	public void collectPatternsRecursive(IRuleRegistry grammar, RegExpSourceList out, boolean isFirst) {
 		if (isFirst) {
-			for (Integer pattern : this.patterns) {
-				Rule rule = grammar.getRule(pattern);
-				rule.collectPatternsRecursive(grammar, out, false);
+			for (Rule pattern : this.patterns) {
+				pattern.collectPatternsRecursive(grammar, out, false);
 			}
 		} else {
 			out.push(this.begin);

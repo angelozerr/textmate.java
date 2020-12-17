@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.tm4e.core.internal.grammar.ScopeListElement;
-import org.eclipse.tm4e.core.internal.rule.IRuleRegistry;
 import org.eclipse.tm4e.core.internal.rule.Rule;
 
 /**
@@ -32,7 +31,7 @@ import org.eclipse.tm4e.core.internal.rule.Rule;
  */
 public class StackElement {
 
-	public static final StackElement NULL = new StackElement(null, 0, 0, null, null, null);
+	public static final StackElement NULL = new StackElement(null, null, 0, null, null, null);
 
 	/**
 	 * The position on the current line where this state was pushed.
@@ -53,7 +52,7 @@ public class StackElement {
 	/**
 	 * The state (rule) that this element represents.
 	 */
-	public final int ruleId;
+	public final Rule rule;
 	/**
 	 * The "pop" (end) condition for this state in case that it was dynamically generated through captured text.
 	 */
@@ -68,10 +67,10 @@ public class StackElement {
 	 */
 	public final ScopeListElement contentNameScopesList;
 
-	public StackElement(StackElement parent, int ruleId, int enterPos, String endRule, ScopeListElement nameScopesList, ScopeListElement contentNameScopesList) {
+	public StackElement(StackElement parent, Rule rule, int enterPos, String endRule, ScopeListElement nameScopesList, ScopeListElement contentNameScopesList) {
 		this.parent = parent;
 		this.depth = (this.parent != null ? this.parent.depth + 1 : 1);
-		this.ruleId = ruleId;
+		this.rule = rule;
 		this.enterPosition = enterPos;
 		this.endRule = endRule;
 		this.nameScopesList = nameScopesList;
@@ -88,7 +87,7 @@ public class StackElement {
 		if (a == null || b == null) {
 			return false;
 		}
-		return a.depth == b.depth && a.ruleId == b.ruleId && !Objects.equals(a.endRule, b.endRule) && structuralEquals(a.parent, b.parent);
+		return a.depth == b.depth && Objects.equals(a.rule, b.rule) && !Objects.equals(a.endRule, b.endRule) && structuralEquals(a.parent, b.parent);
 	}
 
 	@Override
@@ -108,7 +107,7 @@ public class StackElement {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(depth, ruleId, endRule, parent, contentNameScopesList);
+		return Objects.hash(depth, rule, endRule, parent, contentNameScopesList);
 	}
 
 	public void reset() {
@@ -130,23 +129,19 @@ public class StackElement {
 		return this;
 	}
 
-	public StackElement push(int ruleId, int enterPos, String endRule, ScopeListElement nameScopesList, ScopeListElement contentNameScopesList) {
-		return new StackElement(this, ruleId, enterPos, endRule, nameScopesList, contentNameScopesList);
+	public StackElement push(Rule rule, int enterPos, String endRule, ScopeListElement nameScopesList, ScopeListElement contentNameScopesList) {
+		return new StackElement(this, rule, enterPos, endRule, nameScopesList, contentNameScopesList);
 	}
 
 	public int getEnterPos() {
 		return this.enterPosition;
 	}
 
-	public Rule getRule(IRuleRegistry grammar) {
-		return grammar.getRule(this.ruleId);
-	}
-
 	private void appendString(List<String> res) {
 		if (this.parent != null) {
 			this.parent.appendString(res);
 		}
-		res.add('(' + Integer.toString(this.ruleId) + ')'); //, TODO-${this.nameScopesList}, TODO-${this.contentNameScopesList})`;
+		res.add('(' + rule.toString() + ')'); //, TODO-${this.nameScopesList}, TODO-${this.contentNameScopesList})`;
 	}
 
 	@Override
@@ -160,17 +155,13 @@ public class StackElement {
 		if (this.contentNameScopesList.equals(contentNameScopesList)) {
 			return this;
 		}
-		return this.parent.push(this.ruleId, this.enterPosition, this.endRule, this.nameScopesList, contentNameScopesList);
+		return this.parent.push(this.rule, this.enterPosition, this.endRule, this.nameScopesList, contentNameScopesList);
 	}
 
 	public StackElement setEndRule(String endRule) {
 		if (this.endRule != null && this.endRule.equals(endRule)) {
 			return this;
 		}
-		return new StackElement(this.parent, this.ruleId, this.enterPosition, endRule, this.nameScopesList, this.contentNameScopesList);
-	}
-
-	public boolean hasSameRuleAs(StackElement other) {
-		return this.ruleId == other.ruleId;
+		return new StackElement(this.parent, this.rule, this.enterPosition, endRule, this.nameScopesList, this.contentNameScopesList);
 	}
 }

@@ -19,7 +19,7 @@ package org.eclipse.tm4e.core.internal.rule;
 public class IncludeOnlyRule extends Rule {
 
 	public final boolean hasMissingPatterns;
-	public final Integer[] patterns;
+	public final Rule[] patterns;
 	private RegExpSourceList cachedCompiledPatterns;
 
 	public IncludeOnlyRule(int id, String name, String contentName, ICompilePatternsResult patterns) {
@@ -31,9 +31,8 @@ public class IncludeOnlyRule extends Rule {
 
 	@Override
 	public void collectPatternsRecursive(IRuleRegistry grammar, RegExpSourceList out, boolean isFirst) {
-		for (Integer pattern : this.patterns) {
-			Rule rule = grammar.getRule(pattern);
-			rule.collectPatternsRecursive(grammar, out, false);
+		for (Rule pattern : this.patterns) {
+			pattern.collectPatternsRecursive(grammar, out, false);
 		}
 	}
 
