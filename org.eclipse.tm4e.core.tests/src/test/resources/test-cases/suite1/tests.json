@@ -850,7 +850,7 @@
 							"string.interpolated.makefile",
 							"meta.scope.function-call.makefile",
 							"string.interpolated.makefile",
-							"variable.other.makefile"
+							"variable.language.makefile"
 						]
 					},
 					{
@@ -1249,6 +1249,463 @@
 							"source.js",
 							"comment.line.double-slash.js"
 						]
+					}
+				]
+			}
+		]
+	},
+	{
+		"grammars": [
+			"fixtures/Jade22.json"
+		],
+		"grammarPath": "fixtures/Jade22.json",
+		"desc": "Issue #22",
+		"lines": [
+			{
+				"line": ".class One #[span text.] Two text.",
+				"tokens": [
+					{
+						"scopes": [
+							"text.jade",
+							"constant.language.js"
+						],
+						"value": ".class"
+					},
+					{
+						"scopes": [
+							"text.jade"
+						],
+						"value": " One "
+					},
+					{
+						"scopes": [
+							"text.jade",
+							"inline.jade",
+							"entity.name.function.jade"
+						],
+						"value": "#["
+					},
+					{
+						"scopes": [
+							"text.jade",
+							"inline.jade",
+							"tag.inline.jade",
+							"meta.tag.other",
+							"entity.name.tag.jade"
+						],
+						"value": "span"
+					},
+					{
+						"scopes": [
+							"text.jade",
+							"inline.jade"
+						],
+						"value": " text."
+					},
+					{
+						"scopes": [
+							"text.jade",
+							"inline.jade",
+							"entity.name.function.jade"
+						],
+						"value": "]"
+					},
+					{
+						"scopes": [
+							"text.jade"
+						],
+						"value": " Two text."
+					}
+				]
+			}
+		]
+	},
+	{
+		"grammars": [
+			"fixtures/Pug.tmLanguage"
+		],
+		"grammarPath": "fixtures/Pug.tmLanguage",
+		"desc": "Issue #82",
+		"lines": [
+			{
+				"line": "li: custom-link.has-text-primary(to=\"/\")",
+				"tokens": [
+					{
+						"scopes": [
+							"text.pug",
+							"meta.tag.other",
+							"entity.name.tag.pug"
+						],
+						"value": "li"
+					},
+					{
+						"scopes": [
+							"text.pug"
+						],
+						"value": ": "
+					},
+					{
+						"scopes": [
+							"text.pug",
+							"meta.tag.other",
+							"entity.name.tag.pug"
+						],
+						"value": "custom-link"
+					},
+					{
+						"scopes": [
+							"text.pug",
+							"entity.other.attribute-name.class.pug"
+						],
+						"value": ".has-text-primary"
+					},
+					{
+						"scopes": [
+							"text.pug",
+							"meta.tag.other",
+							"constant.name.attribute.tag.pug"
+						],
+						"value": "("
+					},
+					{
+						"scopes": [
+							"text.pug",
+							"meta.tag.other",
+							"entity.other.attribute-name.tag.pug"
+						],
+						"value": "to"
+					},
+					{
+						"scopes": [
+							"text.pug",
+							"meta.tag.other",
+							"attribute_value"
+						],
+						"value": "="
+					},
+					{
+						"scopes": [
+							"text.pug",
+							"meta.tag.other",
+							"attribute_value",
+							"string.quoted.pug"
+						],
+						"value": "\""
+					},
+					{
+						"scopes": [
+							"text.pug",
+							"meta.tag.other",
+							"attribute_value",
+							"string.quoted.pug"
+						],
+						"value": "/"
+					},
+					{
+						"scopes": [
+							"text.pug",
+							"meta.tag.other",
+							"attribute_value",
+							"string.quoted.pug"
+						],
+						"value": "\""
+					},
+					{
+						"scopes": [
+							"text.pug",
+							"meta.tag.other",
+							"constant.name.attribute.tag.pug"
+						],
+						"value": ")"
+					}
+				]
+			}
+		]
+	},
+	{
+		"grammars": [
+			"fixtures/66.plist"
+		],
+		"grammarPath": "fixtures/66.plist",
+		"desc": "Issue #66",
+		"lines": [
+			{
+				"line": "Just some text",
+				"tokens": [
+					{
+						"value": "J",
+						"scopes": [
+							"text.test",
+							"comment"
+						]
+					},
+					{
+						"value": "ust some text",
+						"scopes": [
+							"text.test",
+							"comment"
+						]
+					}
+				]
+			},
+			{
+				"line": "which contains undefined and then",
+				"tokens": [
+					{
+						"value": "which contains undefined and then",
+						"scopes": [
+							"text.test",
+							"comment"
+						]
+					}
+				]
+			},
+			{
+				"line": "more text",
+				"tokens": [
+					{
+						"value": "more text",
+						"scopes": [
+							"text.test",
+							"comment"
+						]
+					}
+				]
+			}
+		]
+	},
+	{
+		"grammars": [
+			"fixtures/105.grammarA.json",
+			"fixtures/105.grammarB.json"
+		],
+		"grammarPath": "fixtures/105.grammarA.json",
+		"desc": "Issue #105",
+		"lines": [
+			{
+				"line": "embedStart",
+				"tokens": [
+					{
+						"value": "embedStart",
+						"scopes": [
+							"source.test"
+						]
+					}
+				]
+			},
+			{
+				"line": "testStart",
+				"tokens": [
+					{
+						"value": "testStart",
+						"scopes": [
+							"source.test"
+						]
+					}
+				]
+			},
+			{
+				"line": "some test pattern",
+				"tokens": [
+					{
+						"value": "some test pattern",
+						"scopes": [
+							"source.test",
+							"test.name"
+						]
+					}
+				]
+			}
+		]
+	},
+	{
+		"grammars": [
+			"fixtures/YAML.tmLanguage"
+		],
+		"grammarPath": "fixtures/YAML.tmLanguage",
+		"desc": "Issue #119",
+		"lines": [
+			{
+				"line": "- run:",
+				"tokens": [
+					{
+						"scopes": [
+							"source.yaml",
+							"punctuation.definition.block.sequence.item.yaml"
+						],
+						"value": "-"
+					},
+					{
+						"scopes": [
+							"source.yaml"
+						],
+						"value": " "
+					},
+					{
+						"scopes": [
+							"source.yaml",
+							"string.unquoted.plain.out.yaml",
+							"entity.name.tag.yaml"
+						],
+						"value": "r"
+					},
+					{
+						"scopes": [
+							"source.yaml",
+							"string.unquoted.plain.out.yaml",
+							"entity.name.tag.yaml"
+						],
+						"value": "un"
+					},
+					{
+						"scopes": [
+							"source.yaml",
+							"punctuation.separator.key-value.mapping.yaml"
+						],
+						"value": ":"
+					}
+				]
+			},
+			{
+				"line": "  command: |",
+				"tokens": [
+					{
+						"scopes": [
+							"source.yaml"
+						],
+						"value": "  "
+					},
+					{
+						"scopes": [
+							"source.yaml",
+							"string.unquoted.plain.out.yaml",
+							"entity.name.tag.yaml"
+						],
+						"value": "c"
+					},
+					{
+						"scopes": [
+							"source.yaml",
+							"string.unquoted.plain.out.yaml",
+							"entity.name.tag.yaml"
+						],
+						"value": "ommand"
+					},
+					{
+						"scopes": [
+							"source.yaml",
+							"punctuation.separator.key-value.mapping.yaml"
+						],
+						"value": ":"
+					},
+					{
+						"scopes": [
+							"source.yaml"
+						],
+						"value": " "
+					},
+					{
+						"scopes": [
+							"source.yaml",
+							"keyword.control.flow.block-scalar.literal.yaml"
+						],
+						"value": "|"
+					}
+				]
+			},
+			{
+				"line": "    docker run \\",
+				"tokens": [
+					{
+						"scopes": [
+							"source.yaml",
+							"string.unquoted.block.yaml"
+						],
+						"value": "    "
+					},
+					{
+						"scopes": [
+							"source.yaml",
+							"string.unquoted.block.yaml"
+						],
+						"value": "docker run \\"
+					}
+				]
+			},
+			{
+				"line": "          sh -c \"\\",
+				"tokens": [
+					{
+						"scopes": [
+							"source.yaml",
+							"string.unquoted.block.yaml"
+						],
+						"value": "          sh -c \"\\"
+					}
+				]
+			},
+			{
+				"line": "            command3",
+				"tokens": [
+					{
+						"scopes": [
+							"source.yaml",
+							"string.unquoted.block.yaml"
+						],
+						"value": "            command3"
+					}
+				]
+			},
+			{
+				"line": "          \"",
+				"tokens": [
+					{
+						"scopes": [
+							"source.yaml",
+							"string.unquoted.block.yaml"
+						],
+						"value": "          \""
+					}
+				]
+			},
+			{
+				"line": "- run:",
+				"tokens": [
+					{
+						"scopes": [
+							"source.yaml",
+							"punctuation.definition.block.sequence.item.yaml"
+						],
+						"value": "-"
+					},
+					{
+						"scopes": [
+							"source.yaml"
+						],
+						"value": " "
+					},
+					{
+						"scopes": [
+							"source.yaml",
+							"string.unquoted.plain.out.yaml",
+							"entity.name.tag.yaml"
+						],
+						"value": "r"
+					},
+					{
+						"scopes": [
+							"source.yaml",
+							"string.unquoted.plain.out.yaml",
+							"entity.name.tag.yaml"
+						],
+						"value": "un"
+					},
+					{
+						"scopes": [
+							"source.yaml",
+							"punctuation.separator.key-value.mapping.yaml"
+						],
+						"value": ":"
 					}
 				]
 			}

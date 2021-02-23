@@ -11,7 +11,13 @@
  */
 package org.eclipse.tm4e.core.grammar;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.eclipse.tm4e.core.Data;
+import org.eclipse.tm4e.core.internal.oniguruma.OnigRegExp;
+import org.eclipse.tm4e.core.internal.oniguruma.OnigResult;
+import org.eclipse.tm4e.core.internal.oniguruma.OnigString;
 import org.eclipse.tm4e.core.registry.Registry;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -92,6 +98,49 @@ public class GrammarTest {
 			}
 			j = i;
 		}
+	}
 
+	@Test
+	public void testVSCodeTextMateIssue8() throws Exception {
+		String line = "ifeq (version,$(firstword $(MAKECMDGOALS))\n";
+		OnigRegExp regexp = new OnigRegExp("\\G(MAKEFILES|VPATH|SHELL|MAKESHELL|MAKE|MAKELEVEL|MAKEFLAGS|MAKECMDGOALS|CURDIR|SUFFIXES|\\.LIBPATTERNS)(?=\\s*\\))");
+		OnigResult result = regexp.search(new OnigString(line), 28);
+		assertTrue(result.count() > 0);
+		String path = "makefile.json";
+		IGrammar grammar = new Registry().loadGrammarFromPathSync(path, Data.class.getResourceAsStream(path));
+
+		ITokenizeLineResult res = grammar.tokenizeLine(line);
+		assertArrayEquals(
+			new String[] { "source.makefile",
+					"meta.scope.conditional.makefile",
+					"meta.scope.condition.makefile",
+					"string.interpolated.makefile",
+					"meta.scope.function-call.makefile",
+					"string.interpolated.makefile",
+					"variable.language.makefile" },	
+			res.getTokens()[6].getScopes().toArray(String[]::new));
+		/*
+This test currently fails at stack
+
+Thread [main] (Suspended)	
+	OnigSearcher.search(OnigString, int) line: 41	
+	OnigScanner.findNextMatchSync(OnigString, int) line: 29	
+	>>> LineTokenizer.matchRule(Grammar, OnigString, boolean, int, StackElement, int) line: 265	
+	LineTokenizer.matchRuleOrInjections(Grammar, OnigString, boolean, int, StackElement, int) line: 287	
+	LineTokenizer.scanNext() line: 112	
+	LineTokenizer.scan() line: 103	
+	LineTokenizer.tokenizeString(Grammar, OnigString, boolean, int, StackElement, LineTokens) line: 524	
+	Grammar.tokenize(String, StackElement, boolean) line: 242	
+	Grammar.tokenizeLine(String, StackElement) line: 194	
+	Grammar.tokenizeLine(String) line: 189	
+	GrammarTest.testVSCodeTextMateIssue8() line: 104	
+
+with conditional breakpoint on >>> `linePos >= 28 && "string.interpolated.makefile".equals(rule.getName(null, null))`
+regExp.search(...) doesn't return result for the Regexp of rule 17/variable.language.makefile
+2 possibilities:
+=> rule not well compiled to OniRegexp, or
+=> joni not properly processing rule.
+
+		 */
 	}
 }
